@@ -91,9 +91,14 @@ class Client {
                 System.out.println("Команда послана");
 
                 ObjectInputStream in  = new ObjectInputStream(clientSocket.getInputStream());
+
+
+
                 List<Object> response = (List<Object>) in.readObject();
+                System.out.println("Получен ответ");
+
                 for (Object s : response) {
-                    System.out.println(String.format("<%s>%n", s.toString()));
+                    System.out.println(String.format("<%s>", s.toString()));
                 }
 
 
