@@ -38,6 +38,8 @@ public class DictionaryCommand implements Serializable {
     }
 
 
+
+
     public DictionaryCommand(List<String> params) throws IllegalArgumentException  {
 
         if (params == null || params.size() < 2) {
@@ -63,8 +65,6 @@ public class DictionaryCommand implements Serializable {
                 definitions.add(s);
             }
         }
-
-
 
 
     }

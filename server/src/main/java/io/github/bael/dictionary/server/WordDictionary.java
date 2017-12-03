@@ -1,6 +1,5 @@
 package io.github.bael.dictionary.server;
 
-import java.util.List;
 import java.util.Set;
 
 public interface WordDictionary {

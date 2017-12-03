@@ -1,5 +1,7 @@
 package io.github.bael.dictionary;
 
+import io.github.bael.dictionary.server.WordDictionary;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +28,11 @@ public class DictionaryCommand implements Serializable {
     private final List<String> definitions;
 
 
+    /*
+    public List<String> apply(WordDictionary dictionary) {
+
+
+    }*/
 
     public DictionaryCommand(List<String> params) throws IllegalArgumentException {
 

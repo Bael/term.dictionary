@@ -3,6 +3,7 @@ package io.github.bael.dictionary.server;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -19,7 +20,7 @@ public class Server {
 
     private final WordDictionary dictionary;
 
-    private void start() {
+    void start() {
 
         //Socket clientSocket = null;
         try (
@@ -29,57 +30,53 @@ public class Server {
             log("Сервер запущен на порту " + port);
 
             boolean isStopped = false;
-            while (!isStopped) {
+            while (!isStopped) try (Socket clientSocket = serverSocket.accept();
+                                    ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());) {
 
-                try (Socket clientSocket = serverSocket.accept();
-                     ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());) {
+                System.out.println("Получили соединение " + clientSocket);
 
-                    System.out.println("Получили соединение " + clientSocket);
+                List<String> command = (List<String>) in.readObject();
+                System.out.println("Прочитали команду " + command);
 
-                    List<String> command = (List<String>) in.readObject();
-                    System.out.println("Прочитали команду " + command);
 
-                    String result;
 
-                    String commandStr = command.get(0);
-                    String term = command.get(1);
-                    HashSet<String> values = new HashSet<>();
-                    values.addAll(command.subList(2, command.size()));
+                String commandStr = command.get(0);
+                String term = command.get(1);
+                HashSet<String> values = new HashSet<>();
+                values.addAll(command.subList(2, command.size()));
 
-                    log(commandStr);
-                    log(term);
-                    log(values.toString());
+                log(commandStr);
+                log(term);
+                log(values.toString());
 
-                    switch (commandStr) {
-                        case "add":
-                            result = dictionary.addDefinitions(term, values);
-                            break;
-                        case "get":
-                            result = Arrays.asList(dictionary.getDefinitions(term)).toString();
-                            break;
-                        case "remove":
-                            result =dictionary.removeTerm(term);
+                List<Object> result = new ArrayList<>();
 
-                            break;
-                            default: result = "Неизвестная команда";
-                    }
+                switch (commandStr) {
+                    case "add":
+                        result.add(dictionary.addDefinitions(term, values));
+                        break;
+                    case "get":
+                        result.addAll(dictionary.getDefinitions(term));
+                        break;
+                    case "remove":
+                        result.add(dictionary.removeTerm(term));
 
-                    if (command.get(0) == "add") {
-
-                    }
-
-                    ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
-                    out.writeObject(result);
-                    out.flush();
-                    log("ответили ");
-
-                    out.close();
-                    in.close();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
+                        break;
+                    default:
+                        result.add("Неизвестная команда");
                 }
 
+
+                ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
+                out.writeObject(result);
+                out.flush();
+                log("ответили ");
+
+                out.close();
+                in.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
         } catch (IOException e) {
