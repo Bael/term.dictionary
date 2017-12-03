@@ -27,7 +27,7 @@ public class Server {
 
     void start() {
 
-        //Socket clientSocket = null;
+
         try (
                 ServerSocket serverSocket = new ServerSocket(port);
         ) {
@@ -65,7 +65,7 @@ public class Server {
             }
             this.threadPool = Executors.newFixedThreadPool(20);
 
-            dictionary = WordDictionary.createDictionary();
+            dictionary = WordDictionary.createSingleThreadDictionary();
     }
 
     public static void main(String[] args) {

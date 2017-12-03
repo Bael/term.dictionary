@@ -4,8 +4,12 @@ import java.util.Set;
 
 public interface WordDictionary {
 
-    static WordDictionary createDictionary() {
+    static WordDictionary createSingleThreadDictionary() {
         return new SimpleDictionary();
+    }
+
+    static WordDictionary createMultiTheadDictionary() {
+        return new ConcurrentDictionary();
     }
 
     String addDefinitions(String term, Set<String> definitions);
