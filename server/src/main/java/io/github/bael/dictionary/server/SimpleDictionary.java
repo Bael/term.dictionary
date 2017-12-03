@@ -9,14 +9,17 @@ public class SimpleDictionary implements WordDictionary {
 
     @Override
     public String addDefinitions(String term, Set<String> definitions) {
-        Set<String> termInDictionary = dictionary.getOrDefault(term, new HashSet<>());
-        termInDictionary.addAll(definitions);
+        //Set<String> termInDictionary = dictionary.getOrDefault(term, new HashSet<>());
+        //termInDictionary.addAll(definitions);
+        dictionary.putIfAbsent(term, definitions);
         return "Успешно добавлено";
     }
 
+
+
     @Override
     public Set<String> getDefinitions(String term) {
-        return dictionary.get(term);
+        return dictionary.getOrDefault(term, new HashSet<>());
     }
 
     @Override
@@ -29,5 +32,10 @@ public class SimpleDictionary implements WordDictionary {
         }
 
 
+    }
+
+
+    public SimpleDictionary() {
+        this.dictionary = new HashMap<>();
     }
 }
