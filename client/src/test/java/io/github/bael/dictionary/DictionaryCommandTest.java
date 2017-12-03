@@ -37,13 +37,30 @@ public class DictionaryCommandTest {
         list.add("привет");
         list.add("дратути");
 
-
         DictionaryCommand command = new DictionaryCommand(list);
+
         assertEquals("add", command.getCommand());
         assertEquals("hello", command.getTerm());
         assertArrayEquals(list.subList(2, list.size()).toArray(), command.getDefinitions().toArray());
 
+    }
+
+    @Test
+    public void getCommandArray() {
+
+        List<String> list = new ArrayList<>();
+        list.add("add");
+        list.add("hello");
+        list.add("привет");
+        list.add("дратути");
+
+        DictionaryCommand command = new DictionaryCommand(list);
+        assertArrayEquals(command.getCommandArray().toArray(), list.toArray());
+
+
+
 
     }
+
 
 }

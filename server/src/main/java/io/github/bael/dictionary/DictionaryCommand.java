@@ -26,19 +26,8 @@ public class DictionaryCommand implements Serializable {
     private final List<String> definitions;
 
 
-    public List<String> getCommandArray() {
-        List<String> start = new ArrayList<>();
-        start.add(command);
-        start.add(term);
 
-        start.addAll(definitions);
-
-        return start;
-
-    }
-
-
-    public DictionaryCommand(List<String> params) throws IllegalArgumentException  {
+    public DictionaryCommand(List<String> params) throws IllegalArgumentException {
 
         if (params == null || params.size() < 2) {
             throw new IllegalArgumentException("Не поданы  параметры команды! " + params);

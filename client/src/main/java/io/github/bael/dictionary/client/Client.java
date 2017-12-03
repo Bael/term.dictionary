@@ -1,6 +1,8 @@
 package io.github.bael.dictionary.client;
 
+
 import io.github.bael.dictionary.DictionaryCommand;
+import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 
 import java.io.*;
 import java.net.Socket;
@@ -14,9 +16,10 @@ import java.util.Arrays;
  */
 class Client {
 
+    // waiting no more 20s
+    private static int SOCKET_TIMEOUT = 2000;
     private final String serverIP;
     private final int serverPort;
-
     private final DictionaryCommand command;
 
     public Client(String[] args) throws IllegalArgumentException {
@@ -28,59 +31,6 @@ class Client {
         serverPort = Integer.parseInt(args[1]);
         command = new DictionaryCommand(Arrays.asList(args).subList(2, args.length));
     }
-
-    // waiting no more 20s
-    private static int SOCKET_TIMEOUT = 20000;
-
-    /**
-     * execute command method
-     *
-     * is connects to server and tries to execute given command
-     * and prints given response to console
-     */
-    private void executeCommandOnServer() {
-
-
-            try(
-                    Socket clientSocket     = new Socket(serverIP, serverPort);
-                    ObjectOutputStream out  = new ObjectOutputStream(
-                                                        new BufferedOutputStream(
-                                                                        clientSocket.getOutputStream()));
-                    ObjectInputStream in    = new ObjectInputStream(
-                                                        new BufferedInputStream(
-                                                                        clientSocket.getInputStream()))
-                ) {
-
-                clientSocket.setSoTimeout(SOCKET_TIMEOUT);
-
-                out.writeObject(command);
-                out.flush();
-
-
-                String response = in.readObject().toString();
-                System.out.println(String.format("<%s%n>", response));
-
-
-            } catch (SocketException e) {
-                System.out.println("Ошибка соединения!");
-                e.printStackTrace();
-            }
-            catch (SocketTimeoutException e) {
-                System.out.println("Превышено время ожидания!");
-                e.printStackTrace();
-            }
-            catch (UnknownHostException e) {
-                System.out.println("Указан некорректный хост!");
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                System.out.println("Не распознан ответ от сервера");
-                e.printStackTrace();
-            }
-
-    }
-
 
     /**
      * main method
@@ -114,6 +64,53 @@ class Client {
 
 
         }
+
+    }
+
+    /**
+     * execute command method
+     *
+     * is connects to server and tries to execute given command
+     * and prints given response to console
+     */
+    private void executeCommandOnServer() {
+
+
+            try(
+                    Socket clientSocket     = new Socket(serverIP, serverPort);
+                    ObjectOutputStream out  = new ObjectOutputStream(clientSocket.getOutputStream());
+
+                ) {
+
+                clientSocket.setSoTimeout(SOCKET_TIMEOUT);
+
+                out.writeObject(command.getCommandArray());
+                out.flush();
+
+                System.out.println("Команда послана");
+
+                ObjectInputStream in  = new ObjectInputStream(clientSocket.getInputStream());
+                String response = in.readObject().toString();
+                System.out.println(String.format("<%s>%n", response));
+
+
+            } catch (SocketException e) {
+                System.out.println("Ошибка соединения!");
+                e.printStackTrace();
+            }
+            catch (SocketTimeoutException e) {
+                System.out.println("Превышено время ожидания!");
+                e.printStackTrace();
+            }
+            catch (UnknownHostException e) {
+                System.out.println("Указан некорректный хост!");
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                System.out.println("Не распознан ответ от сервера");
+                e.printStackTrace();
+            }
 
     }
 
