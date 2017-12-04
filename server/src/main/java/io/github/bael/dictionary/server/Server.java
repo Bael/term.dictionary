@@ -1,14 +1,7 @@
 package io.github.bael.dictionary.server;
 
-import io.github.bael.dictionary.DictionaryCommand;
-
 import java.io.*;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,11 +18,11 @@ public class Server {
 
     private final WordDictionary dictionary;
 
-    void start() {
+    private void start() {
 
 
         try (
-                ServerSocket serverSocket = new ServerSocket(port);
+                ServerSocket serverSocket = new ServerSocket(port)
         ) {
 
             log("Сервер запущен на порту " + port);
@@ -56,7 +49,7 @@ public class Server {
     // Порт сервера
     private final int port;
 
-    public Server(int portToSet) {
+    private Server(int portToSet) {
 
             if (portToSet> 1000 && portToSet< 65535) {
                 port = portToSet;
@@ -65,7 +58,7 @@ public class Server {
             }
             this.threadPool = Executors.newFixedThreadPool(20);
 
-            dictionary = WordDictionary.createSingleThreadDictionary();
+            dictionary = WordDictionary.createMultiThreadDictionary();
     }
 
     public static void main(String[] args) {

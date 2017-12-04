@@ -13,7 +13,7 @@ public class DictionaryCommandRunnable implements Runnable {
     private final WordDictionary dictionary;
     private final Socket clientSocket;
 
-    public DictionaryCommandRunnable(final Socket clientSocket, final WordDictionary dictionary) {
+    DictionaryCommandRunnable(final Socket clientSocket, final WordDictionary dictionary) {
 
         this.dictionary = dictionary;
         this.clientSocket = clientSocket;
@@ -27,13 +27,21 @@ public class DictionaryCommandRunnable implements Runnable {
         try (ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream())) {
 
             List<String> dictionaryCommand;
-            dictionaryCommand = (List<String>) in.readObject();
+
+            Object objectResult = in.readObject();
+            if (objectResult instanceof java.util.ArrayList) {
+                dictionaryCommand = (List<String>) objectResult ;
+            }
+            else {
+                throw new ClassNotFoundException(objectResult.getClass().getCanonicalName());
+            }
+
             System.out.println("Прочитали команду " + dictionaryCommand);
 
             String commandType = dictionaryCommand.get(0);
             String term = dictionaryCommand.get(1);
-            HashSet<String> values = new HashSet<>();
-            values.addAll(dictionaryCommand.subList(2, dictionaryCommand.size()));
+            HashSet<String> values = new HashSet<>(dictionaryCommand.subList(2, dictionaryCommand.size()));
+
 
             log(commandType);
             log(term);
@@ -64,9 +72,9 @@ public class DictionaryCommandRunnable implements Runnable {
             out.close();
 
 
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             if(clientSocket != null && !clientSocket.isClosed())

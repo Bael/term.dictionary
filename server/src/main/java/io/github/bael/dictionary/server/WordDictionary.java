@@ -8,7 +8,7 @@ public interface WordDictionary {
         return new SimpleDictionary();
     }
 
-    static WordDictionary createMultiTheadDictionary() {
+    static WordDictionary createMultiThreadDictionary() {
         return new ConcurrentDictionary();
     }
 
