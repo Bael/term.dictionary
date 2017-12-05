@@ -1,9 +1,7 @@
 package io.github.bael.dictionary;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Command for server
@@ -17,27 +15,13 @@ public class DictionaryCommand implements Serializable {
         return term;
     }
 
-    public List<String> getDefinitions() {
+    public Set<String> getDefinitions() {
         return definitions;
     }
 
     private final String command;
     private final String term;
-    private final List<String> definitions;
-
-
-    public List<String> getCommandArray() {
-        List<String> start = new ArrayList<>();
-        start.add(command);
-        start.add(term);
-
-        start.addAll(definitions);
-
-        return start;
-
-    }
-
-
+    private final Set<String> definitions;
 
 
     public DictionaryCommand(List<String> params) throws IllegalArgumentException  {
@@ -58,7 +42,7 @@ public class DictionaryCommand implements Serializable {
         }
 
 
-        definitions = new ArrayList<>();
+        definitions = new HashSet<>();
 
         for (String s : params.subList(2, params.size())) {
             if (s != null && !s.isEmpty()) {

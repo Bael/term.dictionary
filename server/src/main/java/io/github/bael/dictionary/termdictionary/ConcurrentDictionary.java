@@ -1,14 +1,11 @@
-package io.github.bael.dictionary.server;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package io.github.bael.dictionary.termdictionary;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-public class ConcurrentDictionary implements WordDictionary {
+public class ConcurrentDictionary implements TermDictionary {
 
 //    final Logger logger = LoggerFactory.getLogger(ConcurrentDictionary.class);
 
@@ -19,20 +16,13 @@ public class ConcurrentDictionary implements WordDictionary {
     }
 
     @Override
-    public String addDefinitions(String term, Set<String> definitions) {
+    public void addDefinitions(String term, Set<String> definitions) {
 
 //        logger.debug("Added definitions called with {} term and defintions {}", term, definitions);
+        ConcurrentSkipListSet<String> set = dictionary.putIfAbsent(term, new ConcurrentSkipListSet<>());
+        set.addAll(definitions);
 
-        ConcurrentSkipListSet<String> set = dictionary.getOrDefault(term, new ConcurrentSkipListSet<>());
 
-        synchronized (set) {
-            set.addAll(definitions);
-            dictionary.put(term, set);
-
-//        logger.debug("Current definitions are {} ", set);
-        }
-
-        return "Данные добавлены";
     }
 
     @Override
@@ -40,24 +30,24 @@ public class ConcurrentDictionary implements WordDictionary {
 
 //        logger.debug("get Definitions called with {}", term);
 
-        return dictionary.getOrDefault(term, new ConcurrentSkipListSet<>());
+        return dictionary.get(term);
     }
 
     @Override
-    public String removeTerm(String term) {
+    public boolean removeTerm(String term) {
 
 //        logger.debug("remove term called for {}", term);
 
         if (dictionary.remove(term) == null) {
 
-//            logger.debug("such term does'nt exists in dictionary");
+//            logger.debug("such term does'nt exists in termdictionary");
 
-            return "Такого слова нет в словаре";
+            return false;
         } else {
 
 //            logger.debug("term is removed");
 
-            return "Удалено слово";
+            return true;
         }
     }
 }

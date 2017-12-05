@@ -1,11 +1,7 @@
 package io.github.bael.dictionary;
 
-import io.github.bael.dictionary.server.WordDictionary;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Command for server
@@ -19,22 +15,16 @@ public class DictionaryCommand implements Serializable {
         return term;
     }
 
-    public List<String> getDefinitions() {
+    public Set<String> getDefinitions() {
         return definitions;
     }
 
     private final String command;
     private final String term;
-    private final List<String> definitions;
+    private final Set<String> definitions;
 
 
-    /*
-    public List<String> apply(WordDictionary dictionary) {
-
-
-    }*/
-
-    public DictionaryCommand(List<String> params) throws IllegalArgumentException {
+    public DictionaryCommand(List<String> params) throws IllegalArgumentException  {
 
         if (params == null || params.size() < 2) {
             throw new IllegalArgumentException("Не поданы  параметры команды! " + params);
@@ -52,15 +42,13 @@ public class DictionaryCommand implements Serializable {
         }
 
 
-        definitions = new ArrayList<>();
+        definitions = new HashSet<>();
 
         for (String s : params.subList(2, params.size())) {
             if (s != null && !s.isEmpty()) {
                 definitions.add(s);
             }
         }
-
-
 
 
     }

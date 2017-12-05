@@ -1,19 +1,23 @@
 package io.github.bael.dictionary.server;
 
+import io.github.bael.dictionary.DictionaryCommand;
+import io.github.bael.dictionary.DictionaryCommandResponse;
+import io.github.bael.dictionary.termdictionary.TermDictionary;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DictionaryCommandRunnable implements Runnable {
 
-    private final WordDictionary dictionary;
+    private final TermDictionary dictionary;
     private final Socket clientSocket;
 
-    DictionaryCommandRunnable(final Socket clientSocket, final WordDictionary dictionary) {
+    DictionaryCommandRunnable(final Socket clientSocket, final TermDictionary dictionary) {
 
         this.dictionary = dictionary;
         this.clientSocket = clientSocket;
@@ -26,43 +30,12 @@ public class DictionaryCommandRunnable implements Runnable {
 
         try (ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream())) {
 
-            List<String> dictionaryCommand;
 
-            Object objectResult = in.readObject();
-            if (objectResult instanceof java.util.ArrayList) {
-                dictionaryCommand = (List<String>) objectResult ;
-            }
-            else {
-                throw new ClassNotFoundException(objectResult.getClass().getCanonicalName());
-            }
+            DictionaryCommand dictionaryCommand = (DictionaryCommand) in.readObject();
 
             System.out.println("Прочитали команду " + dictionaryCommand);
 
-            String commandType = dictionaryCommand.get(0);
-            String term = dictionaryCommand.get(1);
-            HashSet<String> values = new HashSet<>(dictionaryCommand.subList(2, dictionaryCommand.size()));
-
-
-            log(commandType);
-            log(term);
-            log(values.toString());
-
-            List<Object> result = new ArrayList<>();
-
-            switch (commandType) {
-                case "add":
-                    result.add(dictionary.addDefinitions(term, values));
-                    break;
-                case "get":
-                    result.addAll(dictionary.getDefinitions(term));
-                    break;
-                case "remove":
-                    result.add(dictionary.removeTerm(term));
-
-                    break;
-                default:
-                    result.add("Неизвестная команда");
-            }
+            DictionaryCommandResponse result = applyCommand(dictionaryCommand);
 
             ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
             out.writeObject(result);
@@ -88,6 +61,47 @@ public class DictionaryCommandRunnable implements Runnable {
             }
         }
 
+
+    }
+
+    /**
+     * Applies termdictionary command to termdictionary
+     * @param dictionaryCommand
+     * @return
+     */
+    private DictionaryCommandResponse applyCommand(DictionaryCommand dictionaryCommand) {
+
+        List<String> result = new ArrayList<>();
+
+        String term = dictionaryCommand.getTerm();
+
+
+        switch (dictionaryCommand.getCommand()) {
+            case "add":
+                dictionary.addDefinitions(term, dictionaryCommand.getDefinitions());
+                result.add(DictionaryCommandResponse.DEFINITIONS_ARE_ADDED);
+                break;
+
+            case "get":
+                Set<String> founded = dictionary.getDefinitions(term);
+                if (founded != null) {
+                    result.addAll(founded);
+                } else result.add(DictionaryCommandResponse.DEFINITIONS_ARE_NOT_FOUNDED);
+                break;
+
+            case "remove":
+                if (dictionary.removeTerm(term)) {
+                    result.add(DictionaryCommandResponse.TERM_IS_DELETED);
+                } else {
+                    result.add(DictionaryCommandResponse.TERM_IS_NOT_FOUNDED);
+                }
+
+                break;
+            default:
+                result.add(DictionaryCommandResponse.UNKNOWN_COMMAND);
+        }
+
+        return new DictionaryCommandResponse(result);
 
     }
 

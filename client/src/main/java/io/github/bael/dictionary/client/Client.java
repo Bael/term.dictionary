@@ -2,6 +2,7 @@ package io.github.bael.dictionary.client;
 
 
 import io.github.bael.dictionary.DictionaryCommand;
+import io.github.bael.dictionary.DictionaryCommandResponse;
 import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 
 import java.io.*;
@@ -85,25 +86,29 @@ class Client {
 
                 clientSocket.setSoTimeout(SOCKET_TIMEOUT);
 
-                out.writeObject(command.getCommandArray());
+                out.writeObject(command);
                 out.flush();
 
                 System.out.println("Команда послана");
 
-                ObjectInputStream in  = new ObjectInputStream(clientSocket.getInputStream());
 
+                try (ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream())) {
+                    DictionaryCommandResponse response = (DictionaryCommandResponse) in.readObject();
+                    System.out.println("Получен ответ");
 
+                    response.getResponse().forEach(System.out::println);
 
-                List<Object> response = (List<Object>) in.readObject();
-                System.out.println("Получен ответ");
-
-                for (Object s : response) {
-                    System.out.println(String.format("<%s>", s.toString()));
                 }
 
 
 
-            } catch (SocketException e) {
+
+            }
+            catch (ClassCastException e) {
+                System.out.println("Ошибка передачи класса команды словаря!");
+                e.printStackTrace();
+            }
+            catch (SocketException e) {
                 System.out.println("Ошибка соединения!");
                 e.printStackTrace();
             }

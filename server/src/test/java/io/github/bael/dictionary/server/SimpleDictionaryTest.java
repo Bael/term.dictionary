@@ -1,5 +1,6 @@
 package io.github.bael.dictionary.server;
 
+import io.github.bael.dictionary.termdictionary.SimpleDictionary;
 import org.junit.Test;
 
 import java.util.HashSet;

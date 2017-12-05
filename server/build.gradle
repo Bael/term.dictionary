@@ -1,4 +1,4 @@
-group 'io.github.bael.dictionary'
+group 'io.github.bael.termdictionary'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'

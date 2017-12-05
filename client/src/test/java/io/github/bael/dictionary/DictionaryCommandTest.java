@@ -45,22 +45,6 @@ public class DictionaryCommandTest {
 
     }
 
-    @Test
-    public void getCommandArray() {
-
-        List<String> list = new ArrayList<>();
-        list.add("add");
-        list.add("hello");
-        list.add("привет");
-        list.add("дратути");
-
-        DictionaryCommand command = new DictionaryCommand(list);
-        assertArrayEquals(command.getCommandArray().toArray(), list.toArray());
-
-
-
-
-    }
 
 
 }

@@ -1,5 +1,8 @@
 package io.github.bael.dictionary.server;
 
+import io.github.bael.dictionary.termdictionary.DictionaryFactory;
+import io.github.bael.dictionary.termdictionary.TermDictionary;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.util.concurrent.ExecutorService;
@@ -16,7 +19,7 @@ public class Server {
 
     private final ExecutorService threadPool;
 
-    private final WordDictionary dictionary;
+    private final TermDictionary dictionary;
 
     private void start() {
 
@@ -51,14 +54,14 @@ public class Server {
 
     private Server(int portToSet) {
 
-            if (portToSet> 1000 && portToSet< 65535) {
+            if (portToSet > 1000 && portToSet < 65535) {
                 port = portToSet;
             } else {
                 port = SERVER_DEFAULT_PORT;
             }
             this.threadPool = Executors.newFixedThreadPool(20);
 
-            dictionary = WordDictionary.createMultiThreadDictionary();
+            dictionary = DictionaryFactory.createMultiThreadDictionary();
     }
 
     public static void main(String[] args) {
