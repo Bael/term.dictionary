@@ -2,13 +2,17 @@ package io.github.bael.dictionary.server;
 
 import io.github.bael.dictionary.DictionaryCommand;
 import io.github.bael.dictionary.DictionaryCommandResponse;
+import io.github.bael.dictionary.termdictionary.ConcurrentDictionary;
 import io.github.bael.dictionary.termdictionary.TermDictionary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -16,6 +20,7 @@ public class DictionaryCommandRunnable implements Runnable {
 
     private final TermDictionary dictionary;
     private final Socket clientSocket;
+    final Logger logger = LoggerFactory.getLogger(ConcurrentDictionary.class);
 
     DictionaryCommandRunnable(final Socket clientSocket, final TermDictionary dictionary) {
 
@@ -26,36 +31,40 @@ public class DictionaryCommandRunnable implements Runnable {
     @Override
     public void run() {
 
-        log("Получили соединение " + clientSocket);
+        logger.info("Got a connection to client socket {}", clientSocket);
 
         try (ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream())) {
 
-
+            logger.info("Start Reading a dictionary command ");
             DictionaryCommand dictionaryCommand = (DictionaryCommand) in.readObject();
+            logger.info("Command:'{}' term:'{}'", dictionaryCommand.getCommand(), dictionaryCommand.getTerm());
 
-            System.out.println("Прочитали команду " + dictionaryCommand);
-
+            logger.info("Starting apply command");
             DictionaryCommandResponse result = applyCommand(dictionaryCommand);
+            logger.info("Result:{}", Arrays.toString(result.getResponse().toArray()));
 
+            logger.info("Starting reply to client");
             ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
             out.writeObject(result);
             out.flush();
-            log("ответили ");
-
-            out.close();
-
+            logger.info("Done");
 
         } catch (ClassNotFoundException e) {
+            logger.error("Transport class error {}", e);
             e.printStackTrace();
         } catch (IOException e) {
+            logger.error("IO Error {}", e);
             e.printStackTrace();
         } finally {
             if(clientSocket != null && !clientSocket.isClosed())
             {
                 try {
+                    logger.debug("Closing client socket");
                     clientSocket.close();
+                    logger.debug("Socket closed");
 
                 } catch (IOException e) {
+                    logger.error("Error occurred while closing client socket {}", e);
                     e.printStackTrace();
                 }
             }
@@ -65,7 +74,10 @@ public class DictionaryCommandRunnable implements Runnable {
     }
 
     /**
-     * Applies termdictionary command to termdictionary
+     * Recognize command type and apply it to the dictionary.
+     * This method can recognize add, get and remove action. For such commands we return the result from dictionary.
+     * If command is not recognised we complain on unknown command type
+     * and return result
      * @param dictionaryCommand
      * @return
      */
@@ -98,6 +110,7 @@ public class DictionaryCommandRunnable implements Runnable {
 
                 break;
             default:
+                logger.error("Unknown command from client {}", dictionaryCommand.getCommand());
                 result.add(DictionaryCommandResponse.UNKNOWN_COMMAND);
         }
 
@@ -105,7 +118,5 @@ public class DictionaryCommandRunnable implements Runnable {
 
     }
 
-    private void log(String commandStr) {
-        System.out.println(commandStr);
-    }
+
 }

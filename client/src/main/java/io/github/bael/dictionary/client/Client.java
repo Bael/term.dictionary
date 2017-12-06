@@ -3,15 +3,15 @@ package io.github.bael.dictionary.client;
 
 import io.github.bael.dictionary.DictionaryCommand;
 import io.github.bael.dictionary.DictionaryCommandResponse;
-import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * This is a dictionary client. It can add, get, or delete term definitions of Dictionary.
@@ -19,7 +19,7 @@ import java.util.List;
 class Client {
 
     // waiting no more 20s
-    private static int SOCKET_TIMEOUT = 2000;
+    private static int SOCKET_TIMEOUT = 20000;
     private final String serverIP;
     private final int serverPort;
     private final DictionaryCommand command;
@@ -27,7 +27,7 @@ class Client {
     public Client(String[] args) throws IllegalArgumentException {
 
         if (args.length < 4) {
-            throw new IllegalArgumentException("Не указаны нужные аргументы!");
+            throw new IllegalArgumentException("Client arguments are not specified!");
         }
         serverIP = args[0];
         serverPort = Integer.parseInt(args[1]);
@@ -56,14 +56,13 @@ class Client {
 
             System.out.println(ex.getLocalizedMessage());
 
-            System.out.format("Укажите корректные параметры запуска:%n 1) %s %n 2) %s %n 3) %s %n 4) %s %n 5) %s %n %s %n",
-                    "IP адрес сервера",
-                    "Порт сервера",
-                    "Название команды, допустимые значения add get remove",
-                    "Термин, который вы хотите обработать командой",
-                    "Значения термина (в случае команды add)",
-                    "Пример корректного запуска: java -jar client.jar 192.168.0.1 9000 add hello алло привет здравствуйте");
-
+            System.out.format("Please set valid args:%n 1) %s %n 2) %s %n 3) %s %n 4) %s %n 5) %s %n %s %n",
+                    "Server IP",
+                    "Server port",
+                    "Command name, valid values are: add, get, remove",
+                    "Term you want to process by command",
+                    "Term definitions (in case of add command)",
+                    "Example of valid args: java -jar client.jar 192.168.0.1 9000 add hello aloha hi");
 
         }
 
@@ -89,13 +88,11 @@ class Client {
                 out.writeObject(command);
                 out.flush();
 
-                System.out.println("Команда послана");
+
 
 
                 try (ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream())) {
                     DictionaryCommandResponse response = (DictionaryCommandResponse) in.readObject();
-                    System.out.println("Получен ответ");
-
                     response.getResponse().forEach(System.out::println);
 
                 }
@@ -105,24 +102,24 @@ class Client {
 
             }
             catch (ClassCastException e) {
-                System.out.println("Ошибка передачи класса команды словаря!");
+                System.out.println("Transport Class Error");
                 e.printStackTrace();
             }
             catch (SocketException e) {
-                System.out.println("Ошибка соединения!");
+                System.out.println("IO error!");
                 e.printStackTrace();
             }
             catch (SocketTimeoutException e) {
-                System.out.println("Превышено время ожидания!");
+                System.out.println("Socket timeout occurred!");
                 e.printStackTrace();
             }
             catch (UnknownHostException e) {
-                System.out.println("Указан некорректный хост!");
+                System.out.println("Wrong host specified!");
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
-                System.out.println("Не распознан ответ от сервера");
+                System.out.println("Sever response not recognized:");
                 e.printStackTrace();
             }
 

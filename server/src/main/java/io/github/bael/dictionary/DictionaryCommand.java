@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * Command for server
+ * Command for server. Transport class
  */
 public class DictionaryCommand implements Serializable {
     public String getCommand() {
@@ -27,18 +27,18 @@ public class DictionaryCommand implements Serializable {
     public DictionaryCommand(List<String> params) throws IllegalArgumentException  {
 
         if (params == null || params.size() < 2) {
-            throw new IllegalArgumentException("Не поданы  параметры команды! " + params);
+            throw new IllegalArgumentException("Command args are not given! " + params);
         }
 
         command = params.get(0).toLowerCase();
         String[] validCommands = {"add", "remove", "get"};
         if (!Arrays.asList(validCommands).contains(command)) {
-            throw new IllegalArgumentException("Поданная команда некорректна " + command);
+            throw new IllegalArgumentException("Wrong command type:" + command);
         }
 
         term = params.get(1);
         if (term == null || term.isEmpty()) {
-            throw new IllegalArgumentException("Термин не определен:" + term);
+            throw new IllegalArgumentException("Term is not set or null:" + term);
         }
 
 

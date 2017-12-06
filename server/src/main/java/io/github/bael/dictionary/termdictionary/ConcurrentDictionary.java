@@ -1,5 +1,8 @@
 package io.github.bael.dictionary.termdictionary;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -7,53 +10,46 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 public class ConcurrentDictionary implements TermDictionary {
 
-//    final Logger logger = LoggerFactory.getLogger(ConcurrentDictionary.class);
+    final Logger logger = LoggerFactory.getLogger(ConcurrentDictionary.class);
 
     private final ConcurrentMap<String, ConcurrentSkipListSet<String>> dictionary;
-    ConcurrentDictionary() {
-        dictionary = new ConcurrentHashMap<>();
+    ConcurrentDictionary(int threadCount) {
+        int initialCapacity = 1000;
+        float loadFactor = 0.75f;
+        logger.info("Creating dictionary with initial capacity {} load factor {} and concurrency level {}", initialCapacity, loadFactor, threadCount);
 
+        dictionary = new ConcurrentHashMap<>(initialCapacity, loadFactor, threadCount);
     }
 
     @Override
     public void addDefinitions(String term, Set<String> definitions) {
+        logger.debug("Added definitions called with {} term and definitions {}", term, definitions);
 
-//        logger.debug("Added definitions called with {} term and defintions {}", term, definitions);
-        //ConcurrentSkipListSet<String> set = dictionary.putIfAbsent(term, new ConcurrentSkipListSet<>());
-        //set.addAll(definitions);
         ConcurrentSkipListSet<String> set = dictionary.getOrDefault(term, new ConcurrentSkipListSet<>());
+        set.addAll(definitions);
+        dictionary.put(term, set);
 
-        synchronized (set) {
-            set.addAll(definitions);
-            dictionary.put(term, set);
-
-//        logger.debug("Current definitions are {} ", set);
-        }
-
+        logger.debug("Current definitions are {} ", set);
 
     }
 
     @Override
     public Set<String> getDefinitions(String term) {
-
-//        logger.debug("get Definitions called with {}", term);
-
+        logger.debug("get Definitions called with {}", term);
         return dictionary.get(term);
     }
 
     @Override
     public boolean removeTerm(String term) {
 
-//        logger.debug("remove term called for {}", term);
+        logger.debug("remove term called for {}", term);
 
         if (dictionary.remove(term) == null) {
-
-//            logger.debug("such term does'nt exists in termdictionary");
+            logger.debug("such term does not exists in Dictionary");
 
             return false;
         } else {
-
-//            logger.debug("term is removed");
+            logger.debug("term is successfully removed");
 
             return true;
         }

@@ -26,17 +26,7 @@ jar {
                 'Main-Class': 'io.github.bael.dictionary.server.Server'
         )
     }
-}
-
-
-
-task fatJar(type: Jar) {
-    manifest {
-        attributes 'Implementation-Title': 'Gradle Jar File Example',
-                'Implementation-Version': version,
-                'Main-Class': 'io.github.bael.dictionary.server.Server'
-    }
-    baseName = project.name + '-all'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
+
 }
+

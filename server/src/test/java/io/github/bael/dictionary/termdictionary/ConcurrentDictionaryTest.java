@@ -14,7 +14,7 @@ public class ConcurrentDictionaryTest {
     @Test
     public void addAndGetDefinitions() {
 
-        final TermDictionary dictionary = DictionaryFactory.createMultiThreadDictionary();
+        final TermDictionary dictionary = DictionaryFactory.createMultiThreadDictionary(20);
 
         Set<String> words = new ConcurrentSkipListSet<>();
         words.add("marvelous");
@@ -40,7 +40,7 @@ public class ConcurrentDictionaryTest {
     @Test
     public void removeTerm() {
 
-        final TermDictionary dictionary = DictionaryFactory.createMultiThreadDictionary();
+        final TermDictionary dictionary = DictionaryFactory.createMultiThreadDictionary(20);
 
         Set<String> words = new ConcurrentSkipListSet<>();
         words.add("marvelous");
