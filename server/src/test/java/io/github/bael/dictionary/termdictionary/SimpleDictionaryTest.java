@@ -1,4 +1,4 @@
-package io.github.bael.dictionary.server;
+package io.github.bael.dictionary.termdictionary;
 
 import io.github.bael.dictionary.termdictionary.SimpleDictionary;
 import org.junit.Test;
