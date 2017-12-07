@@ -22,7 +22,7 @@ public class DictionaryCommandTest {
         List<String> list = new ArrayList<>();
         list.add("adddd");
         list.add("hello");
-        list.add("привет");
+        list.add("howareyou");
 
 
         DictionaryCommand command = new DictionaryCommand(list);

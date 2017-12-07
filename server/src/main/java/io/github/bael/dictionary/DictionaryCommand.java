@@ -1,30 +1,20 @@
 package io.github.bael.dictionary;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Command for server. Transport class
  */
 public class DictionaryCommand implements Serializable {
-    public String getCommand() {
-        return command;
-    }
-
-    public String getTerm() {
-        return term;
-    }
-
-    public Set<String> getDefinitions() {
-        return definitions;
-    }
-
     private final String command;
     private final String term;
     private final Set<String> definitions;
 
-
-    public DictionaryCommand(List<String> params) throws IllegalArgumentException  {
+    public DictionaryCommand(List<String> params) throws IllegalArgumentException {
 
         if (params == null || params.size() < 2) {
             throw new IllegalArgumentException("Command args are not given! " + params);
@@ -51,5 +41,17 @@ public class DictionaryCommand implements Serializable {
         }
 
 
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public String getTerm() {
+        return term;
+    }
+
+    public Set<String> getDefinitions() {
+        return definitions;
     }
 }

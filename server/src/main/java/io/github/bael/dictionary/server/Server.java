@@ -6,13 +6,12 @@ import io.github.bael.dictionary.termdictionary.TermDictionary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
-
 
 
     private final ExecutorService threadPool;
@@ -31,8 +30,8 @@ public class Server {
 
             logger.info("Server started on port {}", port);
 
-            boolean isStopped = false;
-            while (!isStopped) {
+
+            while (true) {
 
                 try {
                     this.threadPool.execute(
@@ -92,14 +91,12 @@ public class Server {
 
         } catch (NumberFormatException e) {
             logger.error("Error initiating Dictionary server. Check the port number in given args {}", (Object[]) args);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Server crushed, exception {}", e);
             e.printStackTrace();
         }
 
     }
-
 
 
 }

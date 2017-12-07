@@ -13,6 +13,7 @@ public class ConcurrentDictionary implements TermDictionary {
     final Logger logger = LoggerFactory.getLogger(ConcurrentDictionary.class);
 
     private final ConcurrentMap<String, ConcurrentSkipListSet<String>> dictionary;
+
     ConcurrentDictionary(int threadCount) {
         int initialCapacity = 1000;
         float loadFactor = 0.75f;

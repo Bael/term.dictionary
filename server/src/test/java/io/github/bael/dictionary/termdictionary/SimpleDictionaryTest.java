@@ -1,11 +1,10 @@
 package io.github.bael.dictionary.termdictionary;
 
-import io.github.bael.dictionary.termdictionary.SimpleDictionary;
 import org.junit.Test;
 
 import java.util.HashSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class SimpleDictionaryTest {
 
@@ -42,8 +41,6 @@ public class SimpleDictionaryTest {
 
 
         return dict;
-
-
 
 
     }

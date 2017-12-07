@@ -56,8 +56,7 @@ public class DictionaryCommandRunnable implements Runnable {
             logger.error("IO Error {}", e);
             e.printStackTrace();
         } finally {
-            if(clientSocket != null && !clientSocket.isClosed())
-            {
+            if (clientSocket != null && !clientSocket.isClosed()) {
                 try {
                     logger.debug("Closing client socket");
                     clientSocket.close();
@@ -78,6 +77,7 @@ public class DictionaryCommandRunnable implements Runnable {
      * This method can recognize add, get and remove action. For such commands we return the result from dictionary.
      * If command is not recognised we complain on unknown command type
      * and return result
+     *
      * @param dictionaryCommand
      * @return
      */

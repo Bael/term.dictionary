@@ -1,6 +1,7 @@
 package io.github.bael.dictionary.termdictionary;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Set;
 
 public class SimpleDictionary implements TermDictionary {
 
@@ -13,7 +14,6 @@ public class SimpleDictionary implements TermDictionary {
         //termInDictionary.addAll(definitions);
         dictionary.putIfAbsent(term, definitions);
     }
-
 
 
     @Override

@@ -34,7 +34,7 @@ public class ConcurrentDictionaryTest {
         Arrays.sort(actual);
 
         assertArrayEquals(expected, actual);
-        
+
     }
 
     @Test
@@ -56,6 +56,7 @@ public class ConcurrentDictionaryTest {
 
     /**
      * fills dictionary for given term
+     *
      * @param term
      * @param words
      * @param dictionary
