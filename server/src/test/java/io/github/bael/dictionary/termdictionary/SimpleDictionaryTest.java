@@ -22,7 +22,7 @@ public class SimpleDictionaryTest {
 
         SimpleDictionary dict = fillDictionary();
         dict.removeTerm("good");
-        assertEquals(0, dict.getDefinitions("good").size());
+        assertEquals(null, dict.getDefinitions("good"));
     }
 
     private SimpleDictionary fillDictionary() {
