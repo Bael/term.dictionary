@@ -1,6 +1,6 @@
 # Term Dictionary
 
-Client server application for working with dictionary stored in sever memory. 
+Client server dictionary application. Dictionary is stored in server memory. 
 
 ## Getting Started
 In command line run:
