@@ -25,9 +25,9 @@ public class ConcurrentDictionary implements TermDictionary {
     public void addDefinitions(String term, Set<String> definitions) {
         logger.debug("Added definitions called with {} term and definitions {}", term, definitions);
 
-        ConcurrentSkipListSet<String> set = dictionary.getOrDefault(term, new ConcurrentSkipListSet<>());
+        dictionary.putIfAbsent(term, new ConcurrentSkipListSet<>());
+        ConcurrentSkipListSet<String> set = dictionary.get(term);
         set.addAll(definitions);
-        dictionary.put(term, set);
 
         logger.debug("Current definitions are {} ", set);
 
